@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login to FocuzNow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-dark: #000000;
+            --text-white: #ffffff;
+            --text-dim: rgba(255, 255, 255, 0.6);
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-white);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Background Ambience */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.4;
+            z-index: 0;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: #667eea;
+            top: -100px;
+            left: -100px;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: #764ba2;
+            bottom: -50px;
+            right: -50px;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .otp-group {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .otp-input {
+            width: 3rem;
+            height: 3.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding: 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error {
+            color: #ff6b6b;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            min-height: 1.2em;
+        }
+
+        .success-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .token-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.8rem;
+            margin: 1rem 0;
+            color: var(--text-dim);
+            user-select: all;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="container">
+        <!-- Email Screen -->
+        <div id="email-screen" class="glass-card">
+            <h1>Welcome Back</h1>
+            <p>Enter your email to sign in or create an account.</p>
+
+            <div class="input-group">
+                <input type="email" id="email" placeholder="name@example.com" required>
+            </div>
+
+            <button id="send-otp-btn" onclick="handleSendOTP()">Continue</button>
+            <div id="email-error" class="error"></div>
+        </div>
+
+        <!-- OTP Screen -->
+        <div id="otp-screen" class="glass-card hidden">
+            <h1>Check Your Email</h1>
+            <p>We sent a code to <span id="display-email" style="color: white; font-weight: 500;"></span></p>
+
+            <div class="otp-group" id="otp-inputs">
+                <input type="text" maxlength="1" class="otp-input" data-index="0">
+                <input type="text" maxlength="1" class="otp-input" data-index="1">
+                <input type="text" maxlength="1" class="otp-input" data-index="2">
+                <input type="text" maxlength="1" class="otp-input" data-index="3">
+                <input type="text" maxlength="1" class="otp-input" data-index="4">
+                <input type="text" maxlength="1" class="otp-input" data-index="5">
+            </div>
+
+            <button id="verify-btn" onclick="handleVerifyOTP()">Verify Code</button>
+            <button onclick="showEmailScreen()"
+                style="background: transparent; margin-top: 1rem; font-size: 0.9rem; color: var(--text-dim);">Change
+                Email</button>
+            <div id="otp-error" class="error"></div>
+        </div>
+
+        <!-- Success Screen -->
+        <div id="success-screen" class="glass-card hidden">
+            <span class="success-icon">🎉</span>
+            <h1>Login Successful</h1>
+            <p>You can now close this window and return to the extension.</p>
+
+            <div id="manual-token" class="hidden">
+                <p>If the extension didn't open automatically, copy this code:</p>
+                <div class="token-box" id="token-display"></div>
+                <button onclick="copyToken()">Copy Code</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        // Initialize Supabase
+        // Note: config.js should define SUPABASE_URL and SUPABASE_ANON_KEY
+        // For this standalone file, we'll use the values from the project documentation if config.js isn't loaded
+        const SUPABASE_URL = 'https://ygxyipegcwhiyirxvfli.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlneHlpcGVnY3doaXlpcnh2ZmxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3Mjc2NTEsImV4cCI6MjA3NzMwMzY1MX0.FTu9FDpGJylYurzylZkZC3asMz16ekUtLuoxjSSQfk';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentEmail = '';
+
+        // OTP Input Handling
+        const otpInputs = document.querySelectorAll('.otp-input');
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1) {
+                    if (index < otpInputs.length - 1) otpInputs[index + 1].focus();
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+                if (e.key === 'Enter') {
+                    handleVerifyOTP();
+                }
+            });
+
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pastedData = e.clipboardData.getData('text').slice(0, 6);
+                if (/^\d+$/.test(pastedData)) {
+                    pastedData.split('').forEach((char, i) => {
+                        if (i < otpInputs.length) otpInputs[i].value = char;
+                    });
+                    if (pastedData.length === 6) handleVerifyOTP();
+                }
+            });
+        });
+
+        async function handleSendOTP() {
+            const email = document.getElementById('email').value.trim();
+            const btn = document.getElementById('send-otp-btn');
+            const errorEl = document.getElementById('email-error');
+
+            if (!email || !email.includes('@')) {
+                errorEl.textContent = 'Please enter a valid email';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+            errorEl.textContent = '';
+
+            try {
+                const { error } = await supabase.auth.signInWithOtp({
+                    email,
+                    options: { shouldCreateUser: true }
+                });
+
+                if (error) throw error;
+
+                currentEmail = email;
+                document.getElementById('display-email').textContent = email;
+                showOtpScreen();
+            } catch (err) {
+                errorEl.textContent = err.message;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Continue';
+            }
+        }
+
+        async function handleVerifyOTP() {
+            const code = Array.from(otpInputs).map(i => i.value).join('');
+            const btn = document.getElementById('verify-btn');
+            const errorEl = document.getElementById('otp-error');
+
+            if (code.length !== 6) {
+                errorEl.textContent = 'Please enter the 6-digit code';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Verifying...';
+            errorEl.textContent = '';
+
+            try {
+                const { data, error } = await supabase.auth.verifyOtp({
+                    email: currentEmail,
+                    token: code,
+                    type: 'email'
+                });
+
+                if (error) throw error;
+
+                handleSuccess(data.session);
+            } catch (err) {
+                errorEl.textContent = err.message || 'Invalid code';
+                btn.disabled = false;
+                btn.textContent = 'Verify Code';
+            }
+        }
+
+        function handleSuccess(session) {
+            document.getElementById('otp-screen').classList.add('hidden');
+            document.getElementById('success-screen').classList.remove('hidden');
+
+            // Generate token string (simplified for manual copy)
+            const tokenData = JSON.stringify({
+                access_token: session.access_token,
+                refresh_token: session.refresh_token,
+                user: session.user
+            });
+
+            const encodedToken = btoa(tokenData);
+
+            // Try to redirect to extension (if protocol handler existed, but for now we use manual copy or deep link if possible)
+            // Since we can't easily deep link to extension without a custom protocol, we'll show the manual copy fallback
+
+            document.getElementById('manual-token').classList.remove('hidden');
+            document.getElementById('token-display').textContent = encodedToken;
+        }
+
+        function showOtpScreen() {
+            document.getElementById('email-screen').classList.add('hidden');
+            document.getElementById('otp-screen').classList.remove('hidden');
+            otpInputs[0].focus();
+        }
+
+        function showEmailScreen() {
+            document.getElementById('otp-screen').classList.add('hidden');
+            document.getElementById('email-screen').classList.remove('hidden');
+        }
+
+        function copyToken() {
+            const token = document.getElementById('token-display').textContent;
+            navigator.clipboard.writeText(token).then(() => {
+                const btn = document.querySelector('#manual-token button');
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = 'Copy Code', 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>
