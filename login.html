@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,13 +15,11 @@
             --text: #f8fafc;
             --text-muted: #94a3b8;
         }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-
         body {
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-dark);
@@ -32,7 +29,6 @@
             align-items: center;
             min-height: 100vh;
         }
-
         .login-container {
             background-color: var(--surface);
             padding: 2rem;
@@ -42,17 +38,14 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
             text-align: center;
         }
-
         h1 {
             margin-bottom: 0.5rem;
             font-weight: 700;
         }
-
         p {
             color: var(--text-muted);
             margin-bottom: 2rem;
         }
-
         .btn {
             display: flex;
             align-items: center;
@@ -68,21 +61,17 @@
             margin-bottom: 1rem;
             font-size: 1rem;
         }
-
         .btn-google {
             background-color: #fff;
             color: #333;
         }
-
         .btn-google:hover {
             background-color: #f1f5f9;
         }
-
         .btn-google img {
             width: 20px;
             margin-right: 0.5rem;
         }
-
         .divider {
             display: flex;
             align-items: center;
@@ -90,30 +79,25 @@
             color: var(--text-muted);
             font-size: 0.875rem;
         }
-
         .divider::before,
         .divider::after {
             content: "";
             flex: 1;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-
         .divider span {
             padding: 0 0.5rem;
         }
-
         .input-group {
             margin-bottom: 1rem;
             text-align: left;
         }
-
         label {
             display: block;
             margin-bottom: 0.5rem;
             font-size: 0.875rem;
             color: var(--text-muted);
         }
-
         input {
             width: 100%;
             padding: 0.75rem;
@@ -124,83 +108,64 @@
             font-family: inherit;
             outline: none;
         }
-
         input:focus {
             border-color: var(--primary);
         }
-
         .btn-primary {
             background-color: var(--primary);
             color: white;
         }
-
         .btn-primary:hover {
             background-color: var(--primary-hover);
         }
-
         .status-msg {
             margin-top: 1rem;
             font-size: 0.875rem;
             min-height: 1.25rem;
         }
-
         .success {
             color: #4caf50;
         }
-
         .error {
             color: #ef4444;
         }
-
         .hidden {
             display: none;
         }
     </style>
 </head>
-
 <body>
     <div class="login-container">
         <h1>Welcome Back</h1>
         <p>Sign in to sync your FocuzNow stats</p>
-
         <button id="google-btn" class="btn btn-google">
             <img src="https://www.google.com/favicon.ico" alt="Google">
             Continue with Google
         </button>
-
         <div class="divider"><span>OR</span></div>
-
         <div id="email-form">
             <div class="input-group">
                 <label>Email Address</label>
                 <input type="email" id="email" placeholder="you@example.com">
             </div>
-            <button id="otp-btn" class="btn btn-primary">Send Magic Link</button>
-        </div>
-
-        <div id="otp-form" class="hidden">
             <div class="input-group">
-                <label>Enter Code sent to email</label>
-                <input type="text" id="otp" placeholder="123456">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Your password">
             </div>
-            <button id="verify-btn" class="btn btn-primary">Verify & Login</button>
+            <button id="login-btn" class="btn btn-primary">Login</button>
         </div>
-
         <div id="status" class="status-msg"></div>
     </div>
-
     <script>
         // Initialize Supabase - Replace with your actual credentials
-        const SUPABASE_URL = 'https://ygxyipegcwhiyirxvfli.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlneHlpcGVnY3doaXlpcnh2ZmxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3Mjc2NTEsImV4cCI6MjA3NzMwMzY1MX0.FTu9FDpGJylYurzylZkZC3asMz16ekUtLuoxjSSQQfk';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
         const statusEl = document.getElementById('status');
-        let userEmail = '';
-
         // 1. Google Login
         document.getElementById('google-btn').addEventListener('click', async () => {
-            const { data, error } = await supabase.auth.signInWithOAuth({
+            const { data, error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
                     redirectTo: 'https://focuznow.com/googleauth'
@@ -208,59 +173,30 @@
             });
             if (error) showStatus(error.message, 'error');
         });
-
-        // 2. Email OTP Flow
-        document.getElementById('otp-btn').addEventListener('click', async () => {
+        // 2. Email/Password Login
+        document.getElementById('login-btn').addEventListener('click', async () => {
             const email = document.getElementById('email').value;
-            if (!email) return showStatus('Please enter email', 'error');
-
-            userEmail = email;
-            const btn = document.getElementById('otp-btn');
+            const password = document.getElementById('password').value;
+            if (!email || !password) return showStatus('Please enter email and password', 'error');
+            const btn = document.getElementById('login-btn');
             btn.disabled = true;
-            btn.textContent = 'Sending...';
-
-            const { error } = await supabase.auth.signInWithOtp({ email });
-
-            if (error) {
-                showStatus(error.message, 'error');
-                btn.disabled = false;
-                btn.textContent = 'Send Magic Link';
-            } else {
-                showStatus('Code sent! Check your email.', 'success');
-                document.getElementById('email-form').classList.add('hidden');
-                document.getElementById('otp-form').classList.remove('hidden');
-            }
-        });
-
-        // 3. Verify OTP
-        document.getElementById('verify-btn').addEventListener('click', async () => {
-            const token = document.getElementById('otp').value;
-            if (!token) return showStatus('Enter code', 'error');
-
-            const btn = document.getElementById('verify-btn');
-            btn.disabled = true;
-            btn.textContent = 'Verifying...';
-
-            const { data, error } = await supabase.auth.verifyOtp({
-                email: userEmail,
-                token,
-                type: 'email'
+            btn.textContent = 'Logging in...';
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email,
+                password
             });
-
             if (error) {
                 showStatus(error.message, 'error');
                 btn.disabled = false;
-                btn.textContent = 'Verify & Login';
+                btn.textContent = 'Login';
             } else {
                 showStatus('Login successful! Syncing...', 'success');
                 handleLoginSuccess(data.session);
             }
         });
-
         // Handle Successful Login
         function handleLoginSuccess(session) {
             if (!session) return;
-
             // Post message to extension
             window.postMessage({
                 type: 'FZ_LOGIN_SUCCESS',
@@ -268,7 +204,6 @@
                 refreshToken: session.refresh_token,
                 user: session.user
             }, '*');
-
             setTimeout(() => {
                 document.body.innerHTML = `
                     <div style="text-align: center; color: white;">
@@ -278,19 +213,16 @@
                 `;
             }, 1500);
         }
-
         function showStatus(msg, type) {
             statusEl.textContent = msg;
             statusEl.className = 'status-msg ' + type;
         }
-
         // Check if already logged in
-        supabase.auth.getSession().then(({ data: { session } }) => {
+        supabaseClient.auth.getSession().then(({ data: { session } }) => {
             if (session) {
                 handleLoginSuccess(session);
             }
         });
     </script>
 </body>
-
 </html>
