@@ -12,11 +12,12 @@
     <style>
         :root {
             --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --bg-dark: #000000;
+            --bg-dark: #0f0f13;
             --text-white: #ffffff;
             --text-dim: rgba(255, 255, 255, 0.6);
-            --glass-bg: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(0, 0, 0, 0.2);
         }
 
         * {
@@ -37,13 +38,14 @@
             position: relative;
         }
 
-        /* Background Ambience */
+        /* Animated Background */
         .orb {
             position: absolute;
             border-radius: 50%;
-            filter: blur(100px);
+            filter: blur(80px);
             opacity: 0.4;
             z-index: 0;
+            animation: float 10s infinite ease-in-out;
         }
 
         .orb-1 {
@@ -60,41 +62,56 @@
             background: #764ba2;
             bottom: -50px;
             right: -50px;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(20px, 20px);
+            }
         }
 
         .container {
             position: relative;
             z-index: 1;
             width: 100%;
-            max-width: 400px;
-            padding: 2rem;
+            max-width: 420px;
+            padding: 1.5rem;
         }
 
         .glass-card {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             border: 1px solid var(--glass-border);
             border-radius: 24px;
-            padding: 2.5rem 2rem;
+            padding: 3rem 2rem;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, opacity 0.3s ease;
         }
 
         h1 {
-            font-size: 2rem;
+            font-size: 2.25rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
             background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
         }
 
         p {
             color: var(--text-dim);
-            margin-bottom: 2rem;
-            font-size: 0.95rem;
-            line-height: 1.5;
+            margin-bottom: 2.5rem;
+            font-size: 1rem;
+            line-height: 1.6;
         }
 
         .input-group {
@@ -102,22 +119,32 @@
             text-align: left;
         }
 
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            font-weight: 500;
+            margin-left: 0.25rem;
+        }
+
         input {
             width: 100%;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
             color: white;
             font-family: inherit;
             font-size: 1rem;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         input:focus {
             outline: none;
             border-color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
+            background: rgba(102, 126, 234, 0.05);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
         }
 
         button {
@@ -125,68 +152,149 @@
             padding: 1rem;
             background: var(--gradient-primary);
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             color: white;
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+            margin-top: 0.5rem;
         }
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 25px -5px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
         }
 
         button:disabled {
             opacity: 0.7;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
+        }
+
+        button.secondary {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        button.secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            box-shadow: none;
         }
 
         .otp-group {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.75rem;
             justify-content: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .otp-input {
-            width: 3rem;
-            height: 3.5rem;
+            width: 3.5rem;
+            height: 4rem;
             text-align: center;
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             font-weight: 600;
             padding: 0;
+            border-radius: 12px;
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
         .error {
             color: #ff6b6b;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             margin-top: 1rem;
-            min-height: 1.2em;
+            min-height: 1.4em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
         .success-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
             display: block;
+            animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .token-box {
             background: rgba(0, 0, 0, 0.3);
-            padding: 1rem;
-            border-radius: 8px;
+            padding: 1.25rem;
+            border-radius: 12px;
             word-break: break-all;
-            font-family: monospace;
-            font-size: 0.8rem;
-            margin: 1rem 0;
+            font-family: 'SF Mono', 'Roboto Mono', monospace;
+            font-size: 0.85rem;
+            margin: 1.5rem 0;
             color: var(--text-dim);
             user-select: all;
+            border: 1px solid var(--glass-border);
+            position: relative;
+        }
+
+        .extension-id-input {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .extension-id-input summary {
+            cursor: pointer;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            list-style: none;
+            transition: color 0.2s;
+        }
+
+        .extension-id-input summary:hover {
+            color: white;
+        }
+
+        .extension-id-input[open] summary {
+            margin-bottom: 1rem;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -199,13 +307,13 @@
         <!-- Email Screen -->
         <div id="email-screen" class="glass-card">
             <h1>Welcome Back</h1>
-            <p>Enter your email to sign in or create an account.</p>
+            <p>Sign in to sync your focus stats across devices.</p>
 
             <div class="input-group">
-                <input type="email" id="email" placeholder="name@example.com" required>
+                <input type="email" id="email" placeholder="name@example.com" required autocomplete="email">
             </div>
 
-            <button id="send-otp-btn" onclick="handleSendOTP()">Continue</button>
+            <button id="send-otp-btn">Continue</button>
             <div id="email-error" class="error"></div>
         </div>
 
@@ -215,180 +323,262 @@
             <p>We sent a code to <span id="display-email" style="color: white; font-weight: 500;"></span></p>
 
             <div class="otp-group" id="otp-inputs">
-                <input type="text" maxlength="1" class="otp-input" data-index="0">
-                <input type="text" maxlength="1" class="otp-input" data-index="1">
-                <input type="text" maxlength="1" class="otp-input" data-index="2">
-                <input type="text" maxlength="1" class="otp-input" data-index="3">
-                <input type="text" maxlength="1" class="otp-input" data-index="4">
-                <input type="text" maxlength="1" class="otp-input" data-index="5">
+                <input type="text" maxlength="1" class="otp-input" data-index="0" inputmode="numeric">
+                <input type="text" maxlength="1" class="otp-input" data-index="1" inputmode="numeric">
+                <input type="text" maxlength="1" class="otp-input" data-index="2" inputmode="numeric">
+                <input type="text" maxlength="1" class="otp-input" data-index="3" inputmode="numeric">
+                <input type="text" maxlength="1" class="otp-input" data-index="4" inputmode="numeric">
+                <input type="text" maxlength="1" class="otp-input" data-index="5" inputmode="numeric">
             </div>
 
-            <button id="verify-btn" onclick="handleVerifyOTP()">Verify Code</button>
-            <button onclick="showEmailScreen()"
-                style="background: transparent; margin-top: 1rem; font-size: 0.9rem; color: var(--text-dim);">Change
-                Email</button>
+            <button id="verify-btn">Verify Code</button>
+            <button id="change-email-btn" class="secondary">Change Email</button>
             <div id="otp-error" class="error"></div>
         </div>
 
         <!-- Success Screen -->
         <div id="success-screen" class="glass-card hidden">
             <span class="success-icon">🎉</span>
-            <h1>Login Successful</h1>
-            <p>You can now close this window and return to the extension.</p>
+            <h1>You're In!</h1>
+            <p>Opening FocuzNow extension...</p>
 
             <div id="manual-token" class="hidden">
-                <p>If the extension didn't open automatically, copy this code:</p>
+                <p>If it didn't open automatically, copy this code:</p>
                 <div class="token-box" id="token-display"></div>
-                <button onclick="copyToken()">Copy Code</button>
+                <button id="copy-token-btn">Copy Code</button>
             </div>
+
+            <details class="extension-id-input">
+                <summary>⚙️ Configure Auto-Login (One-time setup)</summary>
+                <div style="margin-top: 1rem; text-align: left;">
+                    <label for="ext-id">Extension ID</label>
+                    <input type="text" id="ext-id" placeholder="e.g. abcdefghijklmnop...">
+                    <p style="font-size: 0.8rem; margin-top: 0.5rem; margin-bottom: 1rem;">
+                        Find this in <code>chrome://extensions</code>
+                    </p>
+                    <button id="save-ext-id-btn" class="secondary" style="margin-top: 0;">Save ID</button>
+                </div>
+            </details>
         </div>
     </div>
 
-    <script src="config.js"></script>
+    <!-- Config Script (Fallback if file missing) -->
     <script>
-        // Initialize Supabase
-        // Note: config.js should define SUPABASE_URL and SUPABASE_ANON_KEY
-        // For this standalone file, we'll use the values from the project documentation if config.js isn't loaded
-        const SUPABASE_URL = 'https://ygxyipegcwhiyirxvfli.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlneHlpcGVnY3doaXlpcnh2ZmxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3Mjc2NTEsImV4cCI6MjA3NzMwMzY1MX0.FTu9FDpGJylYurzylZkZC3asMz16ekUtLuoxjSSQfk';
+        // Fallback config if config.js fails to load
+        window.SUPABASE_CONFIG = window.SUPABASE_CONFIG || {
+            url: 'https://ygxyipegcwhiyirxvfli.supabase.co',
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlneHlpcGVnY3doaXlpcnh2ZmxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3Mjc2NTEsImV4cCI6MjA3NzMwMzY1MX0.FTu9FDpGJylYurzylZkZC3asMz16ekUtLuoxjSSQfk'
+        };
+    </script>
+    <script src="config.js"></script>
 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <!-- Main Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Supabase
+            const { url, anonKey } = window.SUPABASE_CONFIG;
+            const supabase = window.supabase.createClient(url, anonKey);
 
-        let currentEmail = '';
+            let currentEmail = '';
 
-        // OTP Input Handling
-        const otpInputs = document.querySelectorAll('.otp-input');
-        otpInputs.forEach((input, index) => {
-            input.addEventListener('input', (e) => {
-                if (e.target.value.length === 1) {
-                    if (index < otpInputs.length - 1) otpInputs[index + 1].focus();
+            // Load saved Extension ID
+            const savedExtId = localStorage.getItem('focuznow_extension_id');
+            if (savedExtId) {
+                document.getElementById('ext-id').value = savedExtId;
+            }
+
+            // --- Event Listeners ---
+
+            // Email Screen
+            document.getElementById('send-otp-btn').addEventListener('click', handleSendOTP);
+            document.getElementById('email').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleSendOTP();
+            });
+
+            // OTP Screen
+            document.getElementById('verify-btn').addEventListener('click', handleVerifyOTP);
+            document.getElementById('change-email-btn').addEventListener('click', showEmailScreen);
+
+            // Extension ID Settings
+            document.getElementById('save-ext-id-btn').addEventListener('click', () => {
+                const id = document.getElementById('ext-id').value.trim();
+                if (id) {
+                    localStorage.setItem('focuznow_extension_id', id);
+                    alert('Extension ID saved!');
+                    // If we have a session, try redirecting again
+                    if (document.getElementById('token-display').textContent) {
+                        const tokenData = document.getElementById('token-display').textContent;
+                        tryRedirect(JSON.parse(atob(tokenData)));
+                    }
                 }
             });
 
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                    otpInputs[index - 1].focus();
-                }
-                if (e.key === 'Enter') {
-                    handleVerifyOTP();
-                }
+            document.getElementById('copy-token-btn').addEventListener('click', copyToken);
+
+            // OTP Input Handling
+            const otpInputs = document.querySelectorAll('.otp-input');
+            otpInputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    if (e.target.value.length === 1) {
+                        if (index < otpInputs.length - 1) otpInputs[index + 1].focus();
+                    }
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                        otpInputs[index - 1].focus();
+                    }
+                    if (e.key === 'Enter') {
+                        handleVerifyOTP();
+                    }
+                });
+
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const pastedData = e.clipboardData.getData('text').slice(0, 6);
+                    if (/^\d+$/.test(pastedData)) {
+                        pastedData.split('').forEach((char, i) => {
+                            if (i < otpInputs.length) otpInputs[i].value = char;
+                        });
+                        if (pastedData.length === 6) handleVerifyOTP();
+                    }
+                });
             });
 
-            input.addEventListener('paste', (e) => {
-                e.preventDefault();
-                const pastedData = e.clipboardData.getData('text').slice(0, 6);
-                if (/^\d+$/.test(pastedData)) {
-                    pastedData.split('').forEach((char, i) => {
-                        if (i < otpInputs.length) otpInputs[i].value = char;
+            // --- Functions ---
+
+            async function handleSendOTP() {
+                const emailInput = document.getElementById('email');
+                const email = emailInput.value.trim();
+                const btn = document.getElementById('send-otp-btn');
+                const errorEl = document.getElementById('email-error');
+
+                if (!email || !email.includes('@')) {
+                    showError(errorEl, 'Please enter a valid email');
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.innerHTML = '<div class="spinner"></div> Sending...';
+                errorEl.textContent = '';
+
+                try {
+                    const { error } = await supabase.auth.signInWithOtp({
+                        email,
+                        options: { shouldCreateUser: true }
                     });
-                    if (pastedData.length === 6) handleVerifyOTP();
+
+                    if (error) throw error;
+
+                    currentEmail = email;
+                    document.getElementById('display-email').textContent = email;
+                    showOtpScreen();
+                } catch (err) {
+                    showError(errorEl, err.message);
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = 'Continue';
                 }
-            });
+            }
+
+            async function handleVerifyOTP() {
+                const code = Array.from(otpInputs).map(i => i.value).join('');
+                const btn = document.getElementById('verify-btn');
+                const errorEl = document.getElementById('otp-error');
+
+                if (code.length !== 6) {
+                    showError(errorEl, 'Please enter the 6-digit code');
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.innerHTML = '<div class="spinner"></div> Verifying...';
+                errorEl.textContent = '';
+
+                try {
+                    const { data, error } = await supabase.auth.verifyOtp({
+                        email: currentEmail,
+                        token: code,
+                        type: 'email'
+                    });
+
+                    if (error) throw error;
+
+                    handleSuccess(data.session);
+                } catch (err) {
+                    showError(errorEl, err.message || 'Invalid code');
+                    btn.disabled = false;
+                    btn.textContent = 'Verify Code';
+                }
+            }
+
+            function handleSuccess(session) {
+                document.getElementById('otp-screen').classList.add('hidden');
+                document.getElementById('success-screen').classList.remove('hidden');
+
+                // Generate token string
+                const tokenData = JSON.stringify({
+                    access_token: session.access_token,
+                    refresh_token: session.refresh_token,
+                    user: session.user
+                });
+
+                const encodedToken = btoa(tokenData);
+
+                // Display for manual copy
+                document.getElementById('manual-token').classList.remove('hidden');
+                document.getElementById('token-display').textContent = encodedToken;
+
+                // Try Auto-Redirect
+                tryRedirect(session);
+            }
+
+            function tryRedirect(session) {
+                const extId = localStorage.getItem('focuznow_extension_id');
+                if (extId) {
+                    // Deep link format: chrome-extension://<ID>/authorize.html?access_token=...&refresh_token=...
+                    // We use a simplified format to pass data
+                    const redirectUrl = `chrome-extension://${extId}/popup.html?auth_token=${encodeURIComponent(session.access_token)}&refresh_token=${encodeURIComponent(session.refresh_token)}`;
+
+                    console.log('Attempting redirect to:', redirectUrl);
+
+                    // Small delay to show success animation first
+                    setTimeout(() => {
+                        window.location.href = redirectUrl;
+                    }, 1000);
+                }
+            }
+
+            function showOtpScreen() {
+                document.getElementById('email-screen').classList.add('hidden');
+                document.getElementById('otp-screen').classList.remove('hidden');
+                setTimeout(() => otpInputs[0].focus(), 100);
+            }
+
+            function showEmailScreen() {
+                document.getElementById('otp-screen').classList.add('hidden');
+                document.getElementById('email-screen').classList.remove('hidden');
+            }
+
+            function showError(el, msg) {
+                el.textContent = msg;
+                // Shake animation could be added here
+            }
+
+            function copyToken() {
+                const token = document.getElementById('token-display').textContent;
+                navigator.clipboard.writeText(token).then(() => {
+                    const btn = document.getElementById('copy-token-btn');
+                    const originalText = btn.textContent;
+                    btn.textContent = 'Copied!';
+                    btn.style.background = '#4caf50';
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        btn.style.background = '';
+                    }, 2000);
+                });
+            }
         });
-
-        async function handleSendOTP() {
-            const email = document.getElementById('email').value.trim();
-            const btn = document.getElementById('send-otp-btn');
-            const errorEl = document.getElementById('email-error');
-
-            if (!email || !email.includes('@')) {
-                errorEl.textContent = 'Please enter a valid email';
-                return;
-            }
-
-            btn.disabled = true;
-            btn.textContent = 'Sending...';
-            errorEl.textContent = '';
-
-            try {
-                const { error } = await supabase.auth.signInWithOtp({
-                    email,
-                    options: { shouldCreateUser: true }
-                });
-
-                if (error) throw error;
-
-                currentEmail = email;
-                document.getElementById('display-email').textContent = email;
-                showOtpScreen();
-            } catch (err) {
-                errorEl.textContent = err.message;
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Continue';
-            }
-        }
-
-        async function handleVerifyOTP() {
-            const code = Array.from(otpInputs).map(i => i.value).join('');
-            const btn = document.getElementById('verify-btn');
-            const errorEl = document.getElementById('otp-error');
-
-            if (code.length !== 6) {
-                errorEl.textContent = 'Please enter the 6-digit code';
-                return;
-            }
-
-            btn.disabled = true;
-            btn.textContent = 'Verifying...';
-            errorEl.textContent = '';
-
-            try {
-                const { data, error } = await supabase.auth.verifyOtp({
-                    email: currentEmail,
-                    token: code,
-                    type: 'email'
-                });
-
-                if (error) throw error;
-
-                handleSuccess(data.session);
-            } catch (err) {
-                errorEl.textContent = err.message || 'Invalid code';
-                btn.disabled = false;
-                btn.textContent = 'Verify Code';
-            }
-        }
-
-        function handleSuccess(session) {
-            document.getElementById('otp-screen').classList.add('hidden');
-            document.getElementById('success-screen').classList.remove('hidden');
-
-            // Generate token string (simplified for manual copy)
-            const tokenData = JSON.stringify({
-                access_token: session.access_token,
-                refresh_token: session.refresh_token,
-                user: session.user
-            });
-
-            const encodedToken = btoa(tokenData);
-
-            // Try to redirect to extension (if protocol handler existed, but for now we use manual copy or deep link if possible)
-            // Since we can't easily deep link to extension without a custom protocol, we'll show the manual copy fallback
-
-            document.getElementById('manual-token').classList.remove('hidden');
-            document.getElementById('token-display').textContent = encodedToken;
-        }
-
-        function showOtpScreen() {
-            document.getElementById('email-screen').classList.add('hidden');
-            document.getElementById('otp-screen').classList.remove('hidden');
-            otpInputs[0].focus();
-        }
-
-        function showEmailScreen() {
-            document.getElementById('otp-screen').classList.add('hidden');
-            document.getElementById('email-screen').classList.remove('hidden');
-        }
-
-        function copyToken() {
-            const token = document.getElementById('token-display').textContent;
-            navigator.clipboard.writeText(token).then(() => {
-                const btn = document.querySelector('#manual-token button');
-                btn.textContent = 'Copied!';
-                setTimeout(() => btn.textContent = 'Copy Code', 2000);
-            });
-        }
     </script>
 </body>
 
