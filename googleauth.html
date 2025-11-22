@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,7 +17,6 @@
             height: 100vh;
             margin: 0;
         }
-
         .loader {
             border: 3px solid rgba(255, 255, 255, 0.1);
             border-top: 3px solid #6366f1;
@@ -28,39 +26,33 @@
             animation: spin 1s linear infinite;
             margin-bottom: 1rem;
         }
-
         @keyframes spin {
             0% {
                 transform: rotate(0deg);
             }
-
             100% {
                 transform: rotate(360deg);
             }
         }
     </style>
 </head>
-
 <body>
     <div class="loader"></div>
     <p id="status">Finishing login...</p>
-
     <script>
         // Initialize Supabase - Replace with your actual credentials
-        const SUPABASE_URL = 'https://ygxyipegcwhiyirxvfli.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlneHlpcGVnY3doaXlpcnh2ZmxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3Mjc2NTEsImV4cCI6MjA3NzMwMzY1MX0.FTu9FDpGJylYurzylZkZC3asMz16ekUtLuoxjSSQQfk';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
         async function handleAuth() {
             // Supabase automatically handles the hash fragment parsing
-            const { data: { session }, error } = await supabase.auth.getSession();
-
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
             if (error) {
                 document.getElementById('status').textContent = 'Login failed: ' + error.message;
                 document.getElementById('status').style.color = '#ef4444';
                 return;
             }
-
             if (session) {
                 // Post message to extension
                 window.postMessage({
@@ -69,27 +61,20 @@
                     refreshToken: session.refresh_token,
                     user: session.user
                 }, '*');
-
                 document.getElementById('status').textContent = '✨ Login successful! You can close this tab.';
-
-                // Optional: Redirect to dashboard or close
-                // window.close();
             } else {
                 // No session found, maybe redirect back to login
                 window.location.href = '/login';
             }
         }
-
         // Listen for auth state changes (handles the redirect callback)
-        supabase.auth.onAuthStateChange((event, session) => {
+        supabaseClient.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_IN' && session) {
                 handleAuth();
             }
         });
-
         // Initial check
         handleAuth();
     </script>
 </body>
-
 </html>
