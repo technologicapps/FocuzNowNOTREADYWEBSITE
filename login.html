@@ -1,3 +1,8 @@
+
+web_login.html
+noisrev_devorpmi
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,10 +16,8 @@
             --primary: #6366f1;
             --primary-hover: #4f46e5;
             --bg-dark: #0f172a;
-            --surface: rgba(30, 41, 59, 0.7);
             --text: #f8fafc;
             --text-muted: #94a3b8;
-            --glass-border: rgba(255, 255, 255, 0.1);
         }
         * {
             box-sizing: border-box;
@@ -34,218 +37,274 @@
             align-items: center;
             min-height: 100vh;
             overflow: hidden;
+            perspective: 1000px;
         }
-        /* Overlay for better readability if bg is bright */
+        /* Ambient light orbs */
         body::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, transparent 70%);
+            top: 20%;
+            left: 30%;
+            filter: blur(50px);
+            z-index: -1;
+            animation: float 10s infinite ease-in-out;
+        }
+        body::after {
+            content: '';
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, transparent 70%);
+            bottom: 20%;
+            right: 30%;
+            filter: blur(50px);
+            z-index: -1;
+            animation: float 15s infinite ease-in-out reverse;
+        }
+        @keyframes float {
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+            50% {
+                transform: translate(20px, -20px);
+            }
+        }
+        .login-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow:
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+            padding: 3rem 2.5rem;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+        }
+        /* Subtle shine overlay */
+        .login-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(15, 23, 42, 0.6);
-            z-index: -1;
-        }
-        .login-card {
-            background: var(--surface);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 2.5rem;
-            border-radius: 1.5rem;
-            width: 100%;
-            max-width: 420px;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        /* Glow effect behind the logo/top */
-        .login-card::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, transparent 70%);
-            z-index: -1;
+            border-radius: 24px;
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.1) 0%,
+                    rgba(255, 255, 255, 0.01) 50%,
+                    transparent 100%);
             pointer-events: none;
+            z-index: 0;
+        }
+        .card-content {
+            position: relative;
+            z-index: 1;
         }
         .logo {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 1.5rem;
-            filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+            width: 120px;
+            height: auto;
+            margin-bottom: 2rem;
+            filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.6));
         }
         h1 {
-            font-size: 1.75rem;
+            font-size: 2rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(to right, #fff, #cbd5e1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.75rem;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
         p {
-            color: var(--text-muted);
-            margin-bottom: 2rem;
-            font-size: 0.95rem;
-            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2.5rem;
+            font-size: 1rem;
+            line-height: 1.6;
         }
         .input-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
             text-align: left;
         }
         label {
             display: block;
             margin-bottom: 0.5rem;
-            font-size: 0.875rem;
-            color: var(--text-muted);
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
             font-weight: 500;
+            margin-left: 4px;
         }
         input {
             width: 100%;
-            padding: 0.875rem 1rem;
-            border-radius: 0.75rem;
-            border: 1px solid var(--glass-border);
-            background-color: rgba(0, 0, 0, 0.3);
-            color: var(--text);
+            padding: 1rem 1.25rem;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(0, 0, 0, 0.3);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            color: white;
             font-family: inherit;
             font-size: 1rem;
             outline: none;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
         }
         input:focus {
-            border-color: var(--primary);
-            background-color: rgba(0, 0, 0, 0.4);
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+            background: rgba(0, 0, 0, 0.4);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow:
+                inset 0 2px 4px rgba(0, 0, 0, 0.2),
+                0 0 0 3px rgba(99, 102, 241, 0.2);
         }
         input::placeholder {
-            color: rgba(148, 163, 184, 0.5);
+            color: rgba(255, 255, 255, 0.3);
         }
         .btn {
             display: flex;
             align-items: center;
             justify-content: center;
             width: 100%;
-            padding: 0.875rem;
+            padding: 1rem;
             border: none;
-            border-radius: 0.75rem;
+            border-radius: 16px;
             font-family: inherit;
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
         }
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
             color: white;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            box-shadow:
+                0 4px 6px -1px rgba(79, 70, 229, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
         .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
-        }
-        .btn-primary:active {
-            transform: translateY(0);
+            transform: translateY(-2px);
+            box-shadow:
+                0 10px 15px -3px rgba(79, 70, 229, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
         .btn-google {
-            background-color: white;
+            background: rgba(255, 255, 255, 0.95);
             color: #1e293b;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .btn-google:hover {
-            background-color: #f8fafc;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
         }
         .btn-google img {
-            width: 20px;
+            width: 24px;
             margin-right: 0.75rem;
         }
         .divider {
             display: flex;
             align-items: center;
-            margin: 1.5rem 0;
-            color: var(--text-muted);
+            margin: 2rem 0;
+            color: rgba(255, 255, 255, 0.4);
             font-size: 0.875rem;
+            font-weight: 500;
         }
         .divider::before,
         .divider::after {
             content: "";
             flex: 1;
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         .divider span {
             padding: 0 1rem;
         }
         .status-msg {
             margin-top: 1rem;
-            font-size: 0.875rem;
-            min-height: 1.25rem;
+            font-size: 0.9rem;
+            min-height: 1.5rem;
+            font-weight: 500;
         }
         .success {
             color: #4caf50;
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
         }
         .error {
             color: #ef4444;
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
         }
         .hidden {
             display: none !important;
         }
-        /* Onboarding specific styles */
         .birthday-inputs {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.75rem;
         }
         .birthday-inputs input {
             text-align: center;
+            padding: 1rem 0.5rem;
         }
     </style>
 </head>
 <body>
     <div class="login-card" id="login-screen">
-        <img src="assets/login_logo.png" alt="FocuzNow" class="logo">
-        <h1>Welcome Back</h1>
-        <p>Sign in to sync your stats & unlock pro features</p>
-        <button id="google-btn" class="btn btn-google">
-            <img src="https://www.google.com/favicon.ico" alt="Google">
-            Continue with Google
-        </button>
-        <div class="divider"><span>OR</span></div>
-        <div id="email-form">
-            <div class="input-group">
-                <label>Email Address</label>
-                <input type="email" id="email" placeholder="name@example.com">
+        <div class="card-content">
+            <img src="assets/login_logo.png" alt="FocuzNow" class="logo">
+            <h1>Welcome Back</h1>
+            <p>Sign in to sync your stats & unlock pro features</p>
+            <button id="google-btn" class="btn btn-google">
+                <img src="https://www.google.com/favicon.ico" alt="Google">
+                Continue with Google
+            </button>
+            <div class="divider"><span>OR</span></div>
+            <div id="email-form">
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" placeholder="name@example.com">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="••••••••">
+                </div>
+                <button id="login-btn" class="btn btn-primary">Login / Sign Up</button>
             </div>
-            <div class="input-group">
-                <label>Password</label>
-                <input type="password" id="password" placeholder="••••••••">
-            </div>
-            <button id="login-btn" class="btn btn-primary">Login / Sign Up</button>
+            <div id="status" class="status-msg"></div>
         </div>
-        <div id="status" class="status-msg"></div>
     </div>
     <!-- Onboarding: Name -->
     <div class="login-card hidden" id="onboarding-name">
-        <img src="assets/login_logo.png" alt="FocuzNow" class="logo">
-        <h1>Nice to meet you!</h1>
-        <p>What should we call you?</p>
-        <div class="input-group">
-            <input type="text" id="name-input" placeholder="Your Name">
+        <div class="card-content">
+            <img src="assets/login_logo.png" alt="FocuzNow" class="logo">
+            <h1>Nice to meet you!</h1>
+            <p>What should we call you?</p>
+            <div class="input-group">
+                <input type="text" id="name-input" placeholder="Your Name">
+            </div>
+            <button id="name-next-btn" class="btn btn-primary">Continue</button>
         </div>
-        <button id="name-next-btn" class="btn btn-primary">Continue</button>
     </div>
     <!-- Onboarding: Birthday -->
     <div class="login-card hidden" id="onboarding-birthday">
-        <img src="assets/login_logo.png" alt="FocuzNow" class="logo">
-        <h1>One last thing</h1>
-        <p>When's your birthday? We have a surprise!</p>
-        <div class="input-group birthday-inputs">
-            <input type="text" id="bd-day" placeholder="DD" maxlength="2" style="width: 80px;">
-            <input type="text" id="bd-month" placeholder="MM" maxlength="2" style="width: 80px;">
-            <input type="text" id="bd-year" placeholder="YYYY" maxlength="4">
+        <div class="card-content">
+            <img src="assets/login_logo.png" alt="FocuzNow" class="logo">
+            <h1>One last thing</h1>
+            <p>When's your birthday? We have a surprise!</p>
+            <div class="input-group birthday-inputs">
+                <input type="text" id="bd-day" placeholder="DD" maxlength="2" style="width: 80px;">
+                <input type="text" id="bd-month" placeholder="MM" maxlength="2" style="width: 80px;">
+                <input type="text" id="bd-year" placeholder="YYYY" maxlength="4">
+            </div>
+            <button id="finish-btn" class="btn btn-primary">Let's Go!</button>
         </div>
-        <button id="finish-btn" class="btn btn-primary">Let's Go!</button>
     </div>
     <script>
         // Initialize Supabase - Replace with your actual credentials
@@ -352,9 +411,11 @@
         function finishLogin(session) {
             document.body.innerHTML = `
                 <div class="login-card">
-                    <img src="assets/login_logo.png" alt="FocuzNow" class="logo">
-                    <h1>✨ You're All Set!</h1>
-                    <p>You can close this tab and open the extension.</p>
+                    <div class="card-content">
+                        <img src="assets/login_logo.png" alt="FocuzNow" class="logo">
+                        <h1>✨ You're All Set!</h1>
+                        <p>You can close this tab and open the extension.</p>
+                    </div>
                 </div>
             `;
             window.postMessage({
