@@ -11,9 +11,10 @@
             --primary: #6366f1;
             --primary-hover: #4f46e5;
             --bg-dark: #0f172a;
-            --surface: #1e293b;
+            --surface: rgba(30, 41, 59, 0.7);
             --text: #f8fafc;
             --text-muted: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
         * {
             box-sizing: border-box;
@@ -23,54 +24,143 @@
         body {
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-dark);
+            background-image: url('assets/login_bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             color: var(--text);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            overflow: hidden;
         }
-        .login-container {
-            background-color: var(--surface);
-            padding: 2rem;
-            border-radius: 1rem;
+        /* Overlay for better readability if bg is bright */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            z-index: -1;
+        }
+        .login-card {
+            background: var(--surface);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
             width: 100%;
-            max-width: 400px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            max-width: 420px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Glow effect behind the logo/top */
+        .login-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
         }
         h1 {
-            margin-bottom: 0.5rem;
+            font-size: 1.75rem;
             font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         p {
             color: var(--text-muted);
             margin-bottom: 2rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .input-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--glass-border);
+            background-color: rgba(0, 0, 0, 0.3);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+        input:focus {
+            border-color: var(--primary);
+            background-color: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+        input::placeholder {
+            color: rgba(148, 163, 184, 0.5);
         }
         .btn {
             display: flex;
             align-items: center;
             justify-content: center;
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.875rem;
             border: none;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             font-family: inherit;
             font-weight: 600;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.2s;
             margin-bottom: 1rem;
-            font-size: 1rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
         }
         .btn-google {
-            background-color: #fff;
-            color: #333;
+            background-color: white;
+            color: #1e293b;
         }
         .btn-google:hover {
-            background-color: #f1f5f9;
+            background-color: #f8fafc;
         }
         .btn-google img {
             width: 20px;
-            margin-right: 0.5rem;
+            margin-right: 0.75rem;
         }
         .divider {
             display: flex;
@@ -83,40 +173,10 @@
         .divider::after {
             content: "";
             flex: 1;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--glass-border);
         }
         .divider span {
-            padding: 0 0.5rem;
-        }
-        .input-group {
-            margin-bottom: 1rem;
-            text-align: left;
-        }
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
-            color: var(--text-muted);
-        }
-        input {
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background-color: rgba(0, 0, 0, 0.2);
-            color: var(--text);
-            font-family: inherit;
-            outline: none;
-        }
-        input:focus {
-            border-color: var(--primary);
-        }
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
+            padding: 0 1rem;
         }
         .status-msg {
             margin-top: 1rem;
@@ -130,14 +190,23 @@
             color: #ef4444;
         }
         .hidden {
-            display: none;
+            display: none !important;
+        }
+        /* Onboarding specific styles */
+        .birthday-inputs {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .birthday-inputs input {
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
+    <div class="login-card" id="login-screen">
+        <img src="assets/login_logo.png" alt="FocuzNow" class="logo">
         <h1>Welcome Back</h1>
-        <p>Sign in to sync your FocuzNow stats</p>
+        <p>Sign in to sync your stats & unlock pro features</p>
         <button id="google-btn" class="btn btn-google">
             <img src="https://www.google.com/favicon.ico" alt="Google">
             Continue with Google
@@ -146,23 +215,46 @@
         <div id="email-form">
             <div class="input-group">
                 <label>Email Address</label>
-                <input type="email" id="email" placeholder="you@example.com">
+                <input type="email" id="email" placeholder="name@example.com">
             </div>
             <div class="input-group">
                 <label>Password</label>
-                <input type="password" id="password" placeholder="Your password">
+                <input type="password" id="password" placeholder="••••••••">
             </div>
-            <button id="login-btn" class="btn btn-primary">Login</button>
+            <button id="login-btn" class="btn btn-primary">Login / Sign Up</button>
         </div>
         <div id="status" class="status-msg"></div>
     </div>
+    <!-- Onboarding: Name -->
+    <div class="login-card hidden" id="onboarding-name">
+        <img src="assets/login_logo.png" alt="FocuzNow" class="logo">
+        <h1>Nice to meet you!</h1>
+        <p>What should we call you?</p>
+        <div class="input-group">
+            <input type="text" id="name-input" placeholder="Your Name">
+        </div>
+        <button id="name-next-btn" class="btn btn-primary">Continue</button>
+    </div>
+    <!-- Onboarding: Birthday -->
+    <div class="login-card hidden" id="onboarding-birthday">
+        <img src="assets/login_logo.png" alt="FocuzNow" class="logo">
+        <h1>One last thing</h1>
+        <p>When's your birthday? We have a surprise!</p>
+        <div class="input-group birthday-inputs">
+            <input type="text" id="bd-day" placeholder="DD" maxlength="2" style="width: 80px;">
+            <input type="text" id="bd-month" placeholder="MM" maxlength="2" style="width: 80px;">
+            <input type="text" id="bd-year" placeholder="YYYY" maxlength="4">
+        </div>
+        <button id="finish-btn" class="btn btn-primary">Let's Go!</button>
+    </div>
     <script>
         // Initialize Supabase - Replace with your actual credentials
-        const SUPABASE_URL = 'https://ygxyipegcwhiyirxvfli.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlneHlpcGVnY3doaXlpcnh2ZmxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3Mjc2NTEsImV4cCI6MjA3NzMwMzY1MX0.FTu9FDpGJylYurzylZkZC3asMz16ekUtLuoxjSSQQfk';
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
         const statusEl = document.getElementById('status');
+        let currentSession = null;
         // 1. Google Login
         document.getElementById('google-btn').addEventListener('click', async () => {
             const { data, error } = await supabaseClient.auth.signInWithOAuth({
@@ -180,38 +272,97 @@
             if (!email || !password) return showStatus('Please enter email and password', 'error');
             const btn = document.getElementById('login-btn');
             btn.disabled = true;
-            btn.textContent = 'Logging in...';
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
+            btn.textContent = 'Please wait...';
+            // Try to sign in first
+            let { data, error } = await supabaseClient.auth.signInWithPassword({
                 email,
                 password
             });
-            if (error) {
+            // If invalid login credentials, try to sign up
+            if (error && (error.message.includes('Invalid login credentials') || error.message.includes('not found'))) {
+                const signUpResult = await supabaseClient.auth.signUp({
+                    email,
+                    password
+                });
+                if (signUpResult.error) {
+                    showStatus(signUpResult.error.message, 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'Login / Sign Up';
+                    return;
+                }
+                data = signUpResult.data;
+                error = null;
+                showStatus('Account created!', 'success');
+            } else if (error) {
                 showStatus(error.message, 'error');
                 btn.disabled = false;
-                btn.textContent = 'Login';
-            } else {
-                showStatus('Login successful! Syncing...', 'success');
-                handleLoginSuccess(data.session);
+                btn.textContent = 'Login / Sign Up';
+                return;
+            }
+            if (data.session) {
+                handleAuthSuccess(data.session);
             }
         });
-        // Handle Successful Login
-        function handleLoginSuccess(session) {
-            if (!session) return;
-            // Post message to extension
+        // Handle Auth Success - Check Profile
+        async function handleAuthSuccess(session) {
+            currentSession = session;
+            // Check if profile exists
+            const { data: profile } = await supabaseClient
+                .from('profiles')
+                .select('name, birthday')
+                .eq('id', session.user.id)
+                .single();
+            if (profile && profile.name && profile.birthday) {
+                // Profile complete, finish login
+                finishLogin(session);
+            } else {
+                // Profile incomplete, show onboarding
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('onboarding-name').classList.remove('hidden');
+            }
+        }
+        // Onboarding: Name
+        document.getElementById('name-next-btn').addEventListener('click', async () => {
+            const name = document.getElementById('name-input').value.trim();
+            if (!name) return alert('Please enter your name');
+            // Save name
+            await supabaseClient.from('profiles').upsert({
+                id: currentSession.user.id,
+                email: currentSession.user.email,
+                name: name
+            });
+            document.getElementById('onboarding-name').classList.add('hidden');
+            document.getElementById('onboarding-birthday').classList.remove('hidden');
+        });
+        // Onboarding: Birthday
+        document.getElementById('finish-btn').addEventListener('click', async () => {
+            const day = document.getElementById('bd-day').value;
+            const month = document.getElementById('bd-month').value;
+            const year = document.getElementById('bd-year').value;
+            if (!day || !month || !year) return alert('Please enter full birthday');
+            const birthday = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            // Save birthday
+            await supabaseClient.from('profiles').upsert({
+                id: currentSession.user.id,
+                birthday: birthday
+            });
+            finishLogin(currentSession);
+        });
+        // Final Step: Send message to extension
+        function finishLogin(session) {
+            document.body.innerHTML = `
+                <div class="login-card">
+                    <img src="assets/login_logo.png" alt="FocuzNow" class="logo">
+                    <h1>✨ You're All Set!</h1>
+                    <p>You can close this tab and open the extension.</p>
+                </div>
+            `;
             window.postMessage({
                 type: 'FZ_LOGIN_SUCCESS',
                 token: session.access_token,
                 refreshToken: session.refresh_token,
                 user: session.user
             }, '*');
-            setTimeout(() => {
-                document.body.innerHTML = `
-                    <div style="text-align: center; color: white;">
-                        <h1>✨ You're Logged In!</h1>
-                        <p>You can close this tab and open the extension.</p>
-                    </div>
-                `;
-            }, 1500);
         }
         function showStatus(msg, type) {
             statusEl.textContent = msg;
@@ -220,7 +371,7 @@
         // Check if already logged in
         supabaseClient.auth.getSession().then(({ data: { session } }) => {
             if (session) {
-                handleLoginSuccess(session);
+                handleAuthSuccess(session);
             }
         });
     </script>
