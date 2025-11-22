@@ -5,17 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Authenticating... - FocuzNow</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-dark: #0f172a;
+            --surface: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
         body {
-            background-color: #0f172a;
-            color: #f8fafc;
-            font-family: system-ui, -apple-system, sans-serif;
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: url('assets/login_bg.png');
+            background-size: cover;
+            background-position: center;
+            color: var(--text);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
+        }
+        /* Overlay */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            z-index: -1;
+        }
+        .login-card {
+            background: var(--surface);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            width: 100%;
+            max-width: 420px;
+            border: 1px solid var(--glass-border);
+            text-align: center;
         }
         .loader {
             border: 3px solid rgba(255, 255, 255, 0.1);
@@ -24,7 +59,7 @@
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
-            margin-bottom: 1rem;
+            margin: 0 auto 1rem auto;
         }
         @keyframes spin {
             0% {
@@ -34,17 +69,78 @@
                 transform: rotate(360deg);
             }
         }
+        h1 {
+            margin-bottom: 0.5rem;
+        }
+        /* Onboarding styles */
+        .hidden {
+            display: none !important;
+        }
+        .input-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+        input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--glass-border);
+            background-color: rgba(0, 0, 0, 0.3);
+            color: var(--text);
+            font-family: inherit;
+            outline: none;
+        }
+        .btn {
+            width: 100%;
+            padding: 0.875rem;
+            border: none;
+            border-radius: 0.75rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .birthday-inputs {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .birthday-inputs input {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <div class="loader"></div>
-    <p id="status">Finishing login...</p>
+    <div class="login-card" id="loading-screen">
+        <div class="loader"></div>
+        <p id="status">Finishing login...</p>
+    </div>
+    <!-- Onboarding: Name -->
+    <div class="login-card hidden" id="onboarding-name">
+        <h1>Nice to meet you!</h1>
+        <p>What should we call you?</p>
+        <div class="input-group">
+            <input type="text" id="name-input" placeholder="Your Name">
+        </div>
+        <button id="name-next-btn" class="btn">Continue</button>
+    </div>
+    <!-- Onboarding: Birthday -->
+    <div class="login-card hidden" id="onboarding-birthday">
+        <h1>One last thing</h1>
+        <p>When's your birthday?</p>
+        <div class="input-group birthday-inputs">
+            <input type="text" id="bd-day" placeholder="DD" maxlength="2" style="width: 80px;">
+            <input type="text" id="bd-month" placeholder="MM" maxlength="2" style="width: 80px;">
+            <input type="text" id="bd-year" placeholder="YYYY" maxlength="4">
+        </div>
+        <button id="finish-btn" class="btn">Let's Go!</button>
+    </div>
     <script>
         // Initialize Supabase - Replace with your actual credentials
-        const SUPABASE_URL = 'https://ygxyipegcwhiyirxvfli.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlneHlpcGVnY3doaXlpcnh2ZmxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3Mjc2NTEsImV4cCI6MjA3NzMwMzY1MX0.FTu9FDpGJylYurzylZkZC3asMz16ekUtLuoxjSSQQfk';
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+        let currentSession = null;
         async function handleAuth() {
             // Supabase automatically handles the hash fragment parsing
             const { data: { session }, error } = await supabaseClient.auth.getSession();
@@ -54,18 +150,65 @@
                 return;
             }
             if (session) {
-                // Post message to extension
-                window.postMessage({
-                    type: 'FZ_LOGIN_SUCCESS',
-                    token: session.access_token,
-                    refreshToken: session.refresh_token,
-                    user: session.user
-                }, '*');
-                document.getElementById('status').textContent = '✨ Login successful! You can close this tab.';
+                handleAuthSuccess(session);
             } else {
                 // No session found, maybe redirect back to login
                 window.location.href = '/login';
             }
+        }
+        // Handle Auth Success - Check Profile
+        async function handleAuthSuccess(session) {
+            currentSession = session;
+            // Check if profile exists
+            const { data: profile } = await supabaseClient
+                .from('profiles')
+                .select('name, birthday')
+                .eq('id', session.user.id)
+                .single();
+            if (profile && profile.name && profile.birthday) {
+                finishLogin(session);
+            } else {
+                // Profile incomplete, show onboarding
+                document.getElementById('loading-screen').classList.add('hidden');
+                document.getElementById('onboarding-name').classList.remove('hidden');
+            }
+        }
+        // Onboarding: Name
+        document.getElementById('name-next-btn').addEventListener('click', async () => {
+            const name = document.getElementById('name-input').value.trim();
+            if (!name) return alert('Please enter your name');
+            await supabaseClient.from('profiles').upsert({
+                id: currentSession.user.id,
+                email: currentSession.user.email,
+                name: name
+            });
+            document.getElementById('onboarding-name').classList.add('hidden');
+            document.getElementById('onboarding-birthday').classList.remove('hidden');
+        });
+        // Onboarding: Birthday
+        document.getElementById('finish-btn').addEventListener('click', async () => {
+            const day = document.getElementById('bd-day').value;
+            const month = document.getElementById('bd-month').value;
+            const year = document.getElementById('bd-year').value;
+            if (!day || !month || !year) return alert('Please enter full birthday');
+            const birthday = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            await supabaseClient.from('profiles').upsert({
+                id: currentSession.user.id,
+                birthday: birthday
+            });
+            finishLogin(currentSession);
+        });
+        function finishLogin(session) {
+            // Post message to extension
+            window.postMessage({
+                type: 'FZ_LOGIN_SUCCESS',
+                token: session.access_token,
+                refreshToken: session.refresh_token,
+                user: session.user
+            }, '*');
+            document.getElementById('loading-screen').classList.remove('hidden');
+            document.getElementById('onboarding-birthday').classList.add('hidden');
+            document.getElementById('status').textContent = '✨ Login successful! You can close this tab.';
         }
         // Listen for auth state changes (handles the redirect callback)
         supabaseClient.auth.onAuthStateChange((event, session) => {
@@ -78,4 +221,3 @@
     </script>
 </body>
 </html>
-
