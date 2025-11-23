@@ -225,92 +225,81 @@
                 <input type="text" id="bd-year" placeholder="YYYY" maxlength="4">
             </div>
             <button id="finish-btn" class="btn">Let's Go!</button>
-        </div>
-    </div>
-    <script>
-        // Initialize Supabase - Replace with your actual credentials
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
-        const { createClient } = supabase;
-        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
-        let currentSession = null;
-        async function handleAuth() {
-            // Supabase automatically handles the hash fragment parsing
             const { data: { session }, error } = await supabaseClient.auth.getSession();
             if (error) {
-                document.getElementById('status').textContent = 'Login failed: ' + error.message;
-                document.getElementById('status').style.color = '#ef4444';
-                return;
+            document.getElementById('status').textContent = 'Login failed: ' + error.message;
+            document.getElementById('status').style.color = '#ef4444';
+            return;
             }
             if (session) {
-                handleAuthSuccess(session);
+            handleAuthSuccess(session);
             } else {
-                // No session found, maybe redirect back to login
-                window.location.href = '/login';
+            // No session found, maybe redirect back to login
+            window.location.href = '/login';
             }
-        }
-        // Handle Auth Success - Check Profile
-        async function handleAuthSuccess(session) {
+            }
+            // Handle Auth Success - Check Profile
+            async function handleAuthSuccess(session) {
             currentSession = session;
             // Check if profile exists
             const { data: profile } = await supabaseClient
-                .from('profiles')
-                .select('name, birthday')
-                .eq('id', session.user.id)
-                .single();
+            .from('profiles')
+            .select('name, birthday')
+            .eq('id', session.user.id)
+            .single();
             if (profile && profile.name && profile.birthday) {
-                finishLogin(session);
+            finishLogin(session);
             } else {
-                // Profile incomplete, show onboarding
-                document.getElementById('loading-screen').classList.add('hidden');
-                document.getElementById('onboarding-name').classList.remove('hidden');
+            // Profile incomplete, show onboarding
+            document.getElementById('loading-screen').classList.add('hidden');
+            document.getElementById('onboarding-name').classList.remove('hidden');
             }
-        }
-        // Onboarding: Name
-        document.getElementById('name-next-btn').addEventListener('click', async () => {
+            }
+            // Onboarding: Name
+            document.getElementById('name-next-btn').addEventListener('click', async () => {
             const name = document.getElementById('name-input').value.trim();
             if (!name) return alert('Please enter your name');
             await supabaseClient.from('profiles').upsert({
-                id: currentSession.user.id,
-                email: currentSession.user.email,
-                name: name
+            id: currentSession.user.id,
+            email: currentSession.user.email,
+            name: name
             });
             document.getElementById('onboarding-name').classList.add('hidden');
             document.getElementById('onboarding-birthday').classList.remove('hidden');
-        });
-        // Onboarding: Birthday
-        document.getElementById('finish-btn').addEventListener('click', async () => {
+            });
+            // Onboarding: Birthday
+            document.getElementById('finish-btn').addEventListener('click', async () => {
             const day = document.getElementById('bd-day').value;
             const month = document.getElementById('bd-month').value;
             const year = document.getElementById('bd-year').value;
             if (!day || !month || !year) return alert('Please enter full birthday');
             const birthday = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
             await supabaseClient.from('profiles').upsert({
-                id: currentSession.user.id,
-                birthday: birthday
+            id: currentSession.user.id,
+            birthday: birthday
             });
             finishLogin(currentSession);
-        });
-        function finishLogin(session) {
+            });
+            function finishLogin(session) {
             // Post message to extension
             window.postMessage({
-                type: 'FZ_LOGIN_SUCCESS',
-                token: session.access_token,
-                refreshToken: session.refresh_token,
-                user: session.user
+            type: 'FZ_LOGIN_SUCCESS',
+            token: session.access_token,
+            refreshToken: session.refresh_token,
+            user: session.user
             }, '*');
             document.getElementById('loading-screen').classList.remove('hidden');
             document.getElementById('onboarding-birthday').classList.add('hidden');
             document.getElementById('status').textContent = '✨ Login successful! You can close this tab.';
-        }
-        // Listen for auth state changes (handles the redirect callback)
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' && session) {
-                handleAuth();
             }
-        });
-        // Initial check
-        handleAuth();
-    </script>
+            // Listen for auth state changes (handles the redirect callback)
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+            handleAuth();
+            }
+            });
+            // Initial check
+            handleAuth();
+            </script>
 </body>
 </html>
