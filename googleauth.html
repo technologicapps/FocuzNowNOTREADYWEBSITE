@@ -70,7 +70,7 @@
             }
         }
         .login-card {
-            background: rgba(30, 41, 59, 0.4);
+            background: rgba(30, 41, 59, 0.6);
             backdrop-filter: blur(24px) saturate(180%);
             -webkit-backdrop-filter: blur(24px) saturate(180%);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -79,10 +79,10 @@
             box-shadow:
                 0 25px 50px -12px rgba(0, 0, 0, 0.5),
                 inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-            padding: 3rem 2.5rem;
+            padding: 3.5rem 3rem;
             border-radius: 24px;
-            width: 100%;
-            max-width: 440px;
+            width: 90%;
+            max-width: 500px;
             text-align: center;
             position: relative;
             transform-style: preserve-3d;
@@ -127,7 +127,7 @@
             }
         }
         h1 {
-            font-size: 2rem;
+            font-size: 2.25rem;
             font-weight: 700;
             margin-bottom: 0.75rem;
             color: white;
@@ -135,19 +135,20 @@
         }
         p {
             color: rgba(255, 255, 255, 0.8);
-            font-size: 1rem;
+            font-size: 1.1rem;
+            line-height: 1.5;
         }
         /* Onboarding styles */
         .hidden {
             display: none !important;
         }
         .input-group {
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
             text-align: left;
         }
         input {
             width: 100%;
-            padding: 1rem 1.25rem;
+            padding: 0.875rem 1.25rem;
             border-radius: 16px;
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -155,7 +156,7 @@
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
             color: white;
             font-family: inherit;
-            font-size: 1rem;
+            font-size: 1.1rem;
             outline: none;
             transition: all 0.3s ease;
         }
@@ -174,7 +175,7 @@
             background: linear-gradient(135deg, #6366f1, #4f46e5);
             color: white;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 1.1rem;
             cursor: pointer;
             box-shadow:
                 0 4px 6px -1px rgba(79, 70, 229, 0.3),
@@ -186,6 +187,16 @@
             box-shadow:
                 0 10px 15px -3px rgba(79, 70, 229, 0.4),
                 inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin-top: 1rem;
+            box-shadow: none;
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: none;
         }
         .birthday-inputs {
             display: flex;
@@ -202,6 +213,15 @@
         <div class="card-content">
             <div class="loader"></div>
             <p id="status">Finishing login...</p>
+        </div>
+    </div>
+    <!-- Already Logged In Screen -->
+    <div class="login-card hidden" id="already-logged-in">
+        <div class="card-content">
+            <h1>Welcome Back!</h1>
+            <p id="user-email-display">You are currently logged in.</p>
+            <button id="continue-btn" class="btn">Continue to Extension</button>
+            <button id="switch-account-btn" class="btn btn-secondary">Switch Account</button>
         </div>
     </div>
     <!-- Onboarding: Name -->
@@ -228,6 +248,13 @@
             <button id="finish-btn" class="btn">Let's Go!</button>
         </div>
     </div>
+    <!-- Success Screen -->
+    <div class="login-card hidden" id="success-screen">
+        <div class="card-content">
+            <h1>✨ You're All Set!</h1>
+            <p>You can close this tab and open the extension.</p>
+        </div>
+    </div>
     <script>
         // Initialize Supabase
         const SUPABASE_URL = 'https://ygxyipegcwhiyirxvfli.supabase.co';
@@ -245,7 +272,17 @@
                     return;
                 }
                 if (session) {
-                    handleAuthSuccess(session);
+                    // Check if we just came from a redirect (hash present) or if it's an existing session
+                    if (window.location.hash && window.location.hash.includes('access_token')) {
+                        // Fresh login from redirect -> Proceed automatically
+                        handleAuthSuccess(session);
+                    } else {
+                        // Existing session -> Show "Already Logged In" screen
+                        currentSession = session;
+                        document.getElementById('loading-screen').classList.add('hidden');
+                        document.getElementById('already-logged-in').classList.remove('hidden');
+                        document.getElementById('user-email-display').textContent = `Logged in as ${session.user.email}`;
+                    }
                 } else {
                     // No session found, maybe redirect back to login
                     window.location.href = 'https://focuznow.com/login';
@@ -273,6 +310,7 @@
                 } else {
                     // Profile incomplete, show onboarding
                     document.getElementById('loading-screen').classList.add('hidden');
+                    document.getElementById('already-logged-in').classList.add('hidden');
                     document.getElementById('onboarding-name').classList.remove('hidden');
                 }
             } catch (err) {
@@ -323,14 +361,26 @@
                     refreshToken: session.refresh_token,
                     user: session.user
                 }, '*');
-                document.getElementById('loading-screen').classList.remove('hidden');
+                document.getElementById('loading-screen').classList.add('hidden');
+                document.getElementById('already-logged-in').classList.add('hidden');
                 document.getElementById('onboarding-birthday').classList.add('hidden');
-                document.getElementById('status').textContent = '✨ Login successful! You can close this tab.';
+                document.getElementById('success-screen').classList.remove('hidden');
             } catch (err) {
                 console.error('Finish login error:', err);
                 document.getElementById('status').textContent = 'Error finishing login: ' + err.message;
             }
         }
+        // Continue Button
+        document.getElementById('continue-btn').addEventListener('click', () => {
+            if (currentSession) {
+                handleAuthSuccess(currentSession);
+            }
+        });
+        // Switch Account Button
+        document.getElementById('switch-account-btn').addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'https://focuznow.com/login';
+        });
         // Listen for auth state changes (handles the redirect callback)
         supabaseClient.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_IN' && session) {
