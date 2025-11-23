@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -129,15 +131,21 @@
         .btn-secondary:hover {
             background: rgba(255, 255, 255, 0.15);
         }
-        .btn-google {
-            background: white;
-            color: #1e293b;
+        .social-login {
+            display: flex;
+            gap: 1rem;
             margin-bottom: 2rem;
         }
-        .btn-google:hover {
+        .btn-social {
+            background: white;
+            color: #1e293b;
+            flex: 1;
+            padding: 0.875rem;
+        }
+        .btn-social:hover {
             background: #f8fafc;
         }
-        .btn-google img {
+        .btn-social img {
             width: 24px;
             height: 24px;
         }
@@ -241,6 +249,56 @@
             font-size: 1.1rem;
             transition: all 0.2s;
         }
+        /* Password Strength */
+        .strength-meter {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+            transition: all 0.3s;
+            display: none;
+        }
+        .strength-bar {
+            height: 100%;
+            width: 0;
+            transition: all 0.3s;
+        }
+        .strength-text {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            text-align: right;
+            display: none;
+        }
+        .password-requirements {
+            text-align: left;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: none;
+        }
+        .password-requirements ul {
+            list-style: none;
+            padding: 0;
+        }
+        .password-requirements li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+        .password-requirements li.valid {
+            color: var(--success);
+        }
+        .password-requirements li.invalid {
+            color: var(--text-muted);
+        }
+        .password-requirements li::before {
+            content: "○";
+        }
+        .password-requirements li.valid::before {
+            content: "●";
+        }
     </style>
 </head>
 <body>
@@ -250,10 +308,22 @@
             <img src="assets/login_logo.png" alt="FocuzNow" class="logo">
             <h1>Welcome Back</h1>
             <p>Sign in to sync your stats & unlock pro features</p>
-            <button id="google-btn" class="btn btn-google">
-                <img src="https://www.google.com/favicon.ico" alt="Google">
-                Continue with Google
-            </button>
+            <div class="social-login">
+                <button id="google-btn" class="btn btn-social" title="Continue with Google">
+                    <img src="https://www.google.com/favicon.ico" alt="Google">
+                </button>
+                <button id="github-btn" class="btn btn-social" title="Continue with GitHub">
+                    <img src="https://github.githubassets.com/favicons/favicon.svg" alt="GitHub"
+                        style="filter: invert(1);">
+                </button>
+                <!-- Apple requires specific setup, using placeholder icon -->
+                <button id="apple-btn" class="btn btn-social" title="Continue with Apple">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="black">
+                        <path
+                            d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.74 1.18 0 2.45-1.62 4.37-1.62 1.03.06 2.04.47 2.87 1.15-2.6 1.55-2.05 5.75.62 6.8-.63 1.98-1.55 3.91-2.94 5.9zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+                    </svg>
+                </button>
+            </div>
             <div class="divider"><span>OR</span></div>
             <div id="email-form">
                 <div class="tabs">
@@ -267,6 +337,22 @@
                 <div class="input-group">
                     <label>Password</label>
                     <input type="password" id="password" placeholder="••••••••">
+                    <div class="strength-meter" id="strength-meter">
+                        <div class="strength-bar" id="strength-bar"></div>
+                    </div>
+                    <div class="strength-text" id="strength-text"></div>
+                    <div class="password-requirements" id="password-reqs">
+                        <ul>
+                            <li id="req-length">At least 6 characters</li>
+                            <li id="req-number">Contains a number</li>
+                            <li id="req-special">Contains a special character</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Confirm Password (Sign Up Only) -->
+                <div class="input-group hidden" id="confirm-password-group">
+                    <label>Confirm Password</label>
+                    <input type="password" id="confirm-password" placeholder="••••••••">
                 </div>
                 <div class="checkbox-group" id="tos-group" style="display: none;">
                     <input type="checkbox" id="tos-check">
@@ -333,30 +419,91 @@
         // Toggle Tabs
         document.getElementById('tab-login').addEventListener('click', () => setMode(true));
         document.getElementById('tab-signup').addEventListener('click', () => setMode(false));
+        // Check URL params for email
+        const urlParams = new URLSearchParams(window.location.search);
+        const emailParam = urlParams.get('email');
+        if (emailParam) {
+            document.getElementById('email').value = emailParam;
+        }
         function setMode(isLogin) {
             isLoginMode = isLogin;
             document.getElementById('tab-login').className = isLogin ? 'tab active' : 'tab';
             document.getElementById('tab-signup').className = !isLogin ? 'tab active' : 'tab';
             document.getElementById('submit-btn').textContent = isLogin ? 'Login' : 'Sign Up';
             document.getElementById('tos-group').style.display = isLogin ? 'none' : 'flex';
+            // Toggle Confirm Password & Requirements
+            const confirmGroup = document.getElementById('confirm-password-group');
+            const reqs = document.getElementById('password-reqs');
+            if (isLogin) {
+                confirmGroup.classList.add('hidden');
+                document.getElementById('strength-meter').style.display = 'none';
+                document.getElementById('strength-text').style.display = 'none';
+                reqs.style.display = 'none';
+            } else {
+                confirmGroup.classList.remove('hidden');
+                document.getElementById('strength-meter').style.display = 'block';
+                document.getElementById('strength-text').style.display = 'block';
+                reqs.style.display = 'block';
+            }
             statusEl.style.display = 'none';
         }
-        // 1. Google Login
-        document.getElementById('google-btn').addEventListener('click', async () => {
+        // Password Strength
+        document.getElementById('password').addEventListener('input', (e) => {
+            if (isLoginMode) return;
+            const val = e.target.value;
+            const bar = document.getElementById('strength-bar');
+            const text = document.getElementById('strength-text');
+            // Requirements Check
+            const hasLength = val.length >= 6;
+            const hasNumber = /[0-9]/.test(val);
+            const hasSpecial = /[^A-Za-z0-9]/.test(val);
+            document.getElementById('req-length').className = hasLength ? 'valid' : 'invalid';
+            document.getElementById('req-number').className = hasNumber ? 'valid' : 'invalid';
+            document.getElementById('req-special').className = hasSpecial ? 'valid' : 'invalid';
+            let strength = 0;
+            if (hasLength) strength++;
+            if (val.length > 10) strength++;
+            if (/[A-Z]/.test(val)) strength++;
+            if (hasNumber) strength++;
+            if (hasSpecial) strength++;
+            let color = '#ef4444';
+            let width = '20%';
+            let label = 'Weak';
+            if (strength >= 4) {
+                color = '#22c55e';
+                width = '100%';
+                label = 'Strong';
+            } else if (strength >= 2) {
+                color = '#eab308';
+                width = '60%';
+                label = 'Medium';
+            }
+            bar.style.width = width;
+            bar.style.backgroundColor = color;
+            text.textContent = label;
+            text.style.color = color;
+        });
+        // Social Login Handlers
+        async function handleSocialLogin(provider, redirectPath) {
             const { data, error } = await supabaseClient.auth.signInWithOAuth({
-                provider: 'google',
+                provider: provider,
                 options: {
-                    redirectTo: 'https://focuznow.com/googleauth'
+                    redirectTo: 'https://focuznow.com/' + redirectPath
                 }
             });
             if (error) showStatus(error.message, 'error');
-        });
-        // 2. Email/Password Submit
+        }
+        document.getElementById('google-btn').addEventListener('click', () => handleSocialLogin('google', 'googleauth'));
+        document.getElementById('github-btn').addEventListener('click', () => handleSocialLogin('github', 'githubauth'));
+        document.getElementById('apple-btn').addEventListener('click', () => handleSocialLogin('apple', 'appleauth'));
+        // Email/Password Submit
         document.getElementById('submit-btn').addEventListener('click', async () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             if (!email || !password) return showStatus('Please enter email and password', 'error');
             if (!isLoginMode) {
+                const confirm = document.getElementById('confirm-password').value;
+                if (password !== confirm) return showStatus('Passwords do not match', 'error');
                 const tosChecked = document.getElementById('tos-check').checked;
                 if (!tosChecked) return showStatus('Please agree to the Terms of Service', 'error');
             }
@@ -376,7 +523,6 @@
                 btn.textContent = isLoginMode ? 'Login' : 'Sign Up';
                 return;
             }
-            // If signup success but no session (email confirmation required)
             if (!isLoginMode && !data.session && data.user) {
                 showStatus('Please check your email to confirm your account.', 'success');
                 btn.disabled = false;
@@ -387,30 +533,26 @@
                 handleAuthSuccess(data.session);
             }
         });
-        // Handle Auth Success - Check Profile
+        // Handle Auth Success
         async function handleAuthSuccess(session) {
             currentSession = session;
-            // Check if profile exists
             const { data: profile } = await supabaseClient
                 .from('profiles')
                 .select('name, birthday')
                 .eq('id', session.user.id)
                 .single();
             if (profile && profile.name && profile.birthday) {
-                // Profile complete, finish login
                 finishLogin(session);
             } else {
-                // Profile incomplete, show onboarding
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('already-logged-in').classList.add('hidden');
                 document.getElementById('onboarding-name').classList.remove('hidden');
             }
         }
-        // Onboarding: Name
+        // Onboarding Handlers (Name/Birthday) - Same as before
         document.getElementById('name-next-btn').addEventListener('click', async () => {
             const name = document.getElementById('name-input').value.trim();
             if (!name) return alert('Please enter your name');
-            // Save name
             await supabaseClient.from('profiles').upsert({
                 id: currentSession.user.id,
                 email: currentSession.user.email,
@@ -419,27 +561,32 @@
             document.getElementById('onboarding-name').classList.add('hidden');
             document.getElementById('onboarding-birthday').classList.remove('hidden');
         });
-        // Onboarding: Birthday
         document.getElementById('finish-btn').addEventListener('click', async () => {
             const day = document.getElementById('bd-day').value;
             const month = document.getElementById('bd-month').value;
             const year = document.getElementById('bd-year').value;
             if (!day || !month || !year) return alert('Please enter full birthday');
             const birthday = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-            // Save birthday
             await supabaseClient.from('profiles').upsert({
                 id: currentSession.user.id,
                 birthday: birthday
             });
             finishLogin(currentSession);
         });
-        // Final Step: Send message to extension
         function finishLogin(session) {
-            // Show success screen
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('already-logged-in').classList.add('hidden');
             document.getElementById('onboarding-birthday').classList.add('hidden');
             document.getElementById('success-screen').classList.remove('hidden');
+            // 1. Try sending directly to extension (if running as extension page)
+            if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+                chrome.runtime.sendMessage({
+                    type: 'LOGIN_TOKEN',
+                    token: session.access_token,
+                    refreshToken: session.refresh_token
+                });
+            }
+            // 2. Also post message for content script (if running on web)
             window.postMessage({
                 type: 'FZ_LOGIN_SUCCESS',
                 token: session.access_token,
@@ -450,28 +597,43 @@
         function showStatus(msg, type) {
             statusEl.textContent = msg;
             statusEl.className = 'status-msg ' + type;
+            statusEl.style.display = 'block';
         }
-        // --- Existing Session Handling ---
-        // Check if already logged in
+        // --- Session Handling ---
         supabaseClient.auth.getSession().then(({ data: { session } }) => {
             if (session) {
-                // Instead of auto-finishing, show the "Already Logged In" screen
                 currentSession = session;
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('already-logged-in').classList.remove('hidden');
                 document.getElementById('user-email-display').textContent = `Logged in as ${session.user.email}`;
             }
         });
-        // Continue Button
-        document.getElementById('continue-btn').addEventListener('click', () => {
+        // Continue Button - Refresh Session First
+        document.getElementById('continue-btn').addEventListener('click', async () => {
             if (currentSession) {
-                handleAuthSuccess(currentSession);
+                // Refresh session to ensure token is valid
+                const { data: { session }, error } = await supabaseClient.auth.refreshSession();
+                if (session) {
+                    handleAuthSuccess(session);
+                } else {
+                    // Refresh failed, force re-login
+                    await supabaseClient.auth.signOut();
+                    window.location.reload();
+                }
             }
         });
-        // Switch Account Button
+        // Switch Account Button - Robust Logout
         document.getElementById('switch-account-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('switch-account-btn');
+            btn.textContent = 'Signing out...';
             await supabaseClient.auth.signOut();
-            window.location.reload();
+            localStorage.clear();
+            currentSession = null;
+            // Reset UI instead of reloading to avoid race conditions
+            document.getElementById('already-logged-in').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            setMode(true); // Default to login
+            btn.textContent = 'Switch Account'; // Reset button text
         });
     </script>
 </body>
