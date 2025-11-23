@@ -38,57 +38,58 @@
             overflow: hidden;
         }
         .login-card {
-            background: rgba(30, 41, 59, 0.4);
+            background: rgba(30, 41, 59, 0.6);
             backdrop-filter: blur(24px) saturate(180%);
             -webkit-backdrop-filter: blur(24px) saturate(180%);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
-            padding: 3rem 2.5rem;
-            width: 100%;
-            max-width: 440px;
+            padding: 3.5rem 3rem;
+            width: 90%;
+            max-width: 500px;
             text-align: center;
             position: relative;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
         .logo {
-            width: 80px;
-            height: 80px;
+            width: 90px;
+            height: 90px;
             margin-bottom: 1.5rem;
             filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.3));
         }
         h1 {
-            font-size: 2rem;
+            font-size: 2.25rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
             background: linear-gradient(to right, #fff, #cbd5e1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         p {
             color: var(--text-muted);
-            margin-bottom: 2rem;
-            font-size: 0.95rem;
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+            line-height: 1.5;
         }
         .input-group {
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
             text-align: left;
         }
         .input-group label {
             display: block;
-            font-size: 0.875rem;
+            font-size: 0.95rem;
             font-weight: 500;
             margin-bottom: 0.5rem;
             color: var(--text-muted);
         }
         .input-group input {
             width: 100%;
-            padding: 0.75rem 1rem;
+            padding: 0.875rem 1.25rem;
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 14px;
             color: var(--text);
             font-family: inherit;
-            font-size: 1rem;
+            font-size: 1.1rem;
             transition: all 0.2s;
         }
         .input-group input:focus {
@@ -98,12 +99,12 @@
         }
         .btn {
             width: 100%;
-            padding: 0.875rem;
+            padding: 1rem;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             font-family: inherit;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
@@ -120,28 +121,32 @@
             transform: translateY(-1px);
             box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
         }
-        .btn-primary:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin-top: 1rem;
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
         }
         .btn-google {
             background: white;
             color: #1e293b;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
         .btn-google:hover {
             background: #f8fafc;
         }
         .btn-google img {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
         }
         .divider {
             display: flex;
             align-items: center;
-            margin: 1.5rem 0;
+            margin: 2rem 0;
             color: var(--text-muted);
-            font-size: 0.875rem;
+            font-size: 0.95rem;
         }
         .divider::before,
         .divider::after {
@@ -161,13 +166,13 @@
             text-align: left;
         }
         .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             accent-color: var(--primary);
             cursor: pointer;
         }
         .checkbox-group label {
-            font-size: 0.875rem;
+            font-size: 0.95rem;
             color: var(--text-muted);
             cursor: pointer;
         }
@@ -179,10 +184,10 @@
             text-decoration: underline;
         }
         .status-msg {
-            margin-top: 1rem;
-            font-size: 0.875rem;
-            padding: 0.75rem;
-            border-radius: 8px;
+            margin-top: 1.5rem;
+            font-size: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
             display: none;
         }
         .status-msg.error {
@@ -198,29 +203,16 @@
             display: block;
         }
         .hidden {
-            display: none;
+            display: none !important;
         }
         .birthday-inputs {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: center;
-        }
-        .tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-        .tab {
-            background: none;
-            border: none;
             color: var(--text-muted);
             padding-bottom: 0.5rem;
             border-bottom: 2px solid transparent;
             font-weight: 600;
             cursor: pointer;
             font-family: inherit;
-            font-size: 1rem;
+            font-size: 1.1rem;
             transition: all 0.2s;
         }
         .tab.active {
@@ -230,9 +222,29 @@
         .tab:hover:not(.active) {
             color: var(--text);
         }
+        .tabs {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            justify-content: center;
+        }
+        .tab {
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-muted);
+            padding-bottom: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
     </style>
 </head>
 <body>
+    <!-- Main Login Screen -->
     <div class="login-card" id="login-screen">
         <div class="card-content">
             <img src="assets/login_logo.png" alt="FocuzNow" class="logo">
@@ -265,6 +277,16 @@
             <div id="status" class="status-msg"></div>
         </div>
     </div>
+    <!-- Already Logged In Screen -->
+    <div class="login-card hidden" id="already-logged-in">
+        <div class="card-content">
+            <img src="assets/login_logo.png" alt="FocuzNow" class="logo">
+            <h1>Welcome Back!</h1>
+            <p id="user-email-display">You are currently logged in.</p>
+            <button id="continue-btn" class="btn btn-primary">Continue to Extension</button>
+            <button id="switch-account-btn" class="btn btn-secondary">Switch Account</button>
+        </div>
+    </div>
     <!-- Onboarding: Name -->
     <div class="login-card hidden" id="onboarding-name">
         <div class="card-content">
@@ -289,6 +311,14 @@
                 <input type="text" id="bd-year" placeholder="YYYY" maxlength="4">
             </div>
             <button id="finish-btn" class="btn btn-primary">Let's Go!</button>
+        </div>
+    </div>
+    <!-- Success Screen -->
+    <div class="login-card hidden" id="success-screen">
+        <div class="card-content">
+            <img src="assets/login_logo.png" alt="FocuzNow" class="logo">
+            <h1>✨ You're All Set!</h1>
+            <p>You can close this tab and open the extension.</p>
         </div>
     </div>
     <script>
@@ -372,6 +402,7 @@
             } else {
                 // Profile incomplete, show onboarding
                 document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('already-logged-in').classList.add('hidden');
                 document.getElementById('onboarding-name').classList.remove('hidden');
             }
         }
@@ -404,15 +435,11 @@
         });
         // Final Step: Send message to extension
         function finishLogin(session) {
-            document.body.innerHTML = `
-                <div class="login-card">
-                    <div class="card-content">
-                        <img src="assets/login_logo.png" alt="FocuzNow" class="logo">
-                        <h1>✨ You're All Set!</h1>
-                        <p>You can close this tab and open the extension.</p>
-                    </div>
-                </div>
-            `;
+            // Show success screen
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('already-logged-in').classList.add('hidden');
+            document.getElementById('onboarding-birthday').classList.add('hidden');
+            document.getElementById('success-screen').classList.remove('hidden');
             window.postMessage({
                 type: 'FZ_LOGIN_SUCCESS',
                 token: session.access_token,
@@ -424,11 +451,27 @@
             statusEl.textContent = msg;
             statusEl.className = 'status-msg ' + type;
         }
+        // --- Existing Session Handling ---
         // Check if already logged in
         supabaseClient.auth.getSession().then(({ data: { session } }) => {
             if (session) {
-                handleAuthSuccess(session);
+                // Instead of auto-finishing, show the "Already Logged In" screen
+                currentSession = session;
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('already-logged-in').classList.remove('hidden');
+                document.getElementById('user-email-display').textContent = `Logged in as ${session.user.email}`;
             }
+        });
+        // Continue Button
+        document.getElementById('continue-btn').addEventListener('click', () => {
+            if (currentSession) {
+                handleAuthSuccess(currentSession);
+            }
+        });
+        // Switch Account Button
+        document.getElementById('switch-account-btn').addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            window.location.reload();
         });
     </script>
 </body>
