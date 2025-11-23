@@ -362,6 +362,21 @@
             </div>
             <div id="status" class="status-msg"></div>
         </div>
+    <!-- Verification Code Screen -->
+    <div class="login-card hidden" id="verification-screen">
+        <div class="card-content">
+            <img src="assets/login_logo.png" alt="FocuzNow" class="logo">
+            <h1>Check Your Email</h1>
+            <p id="verification-email-display">We sent a verification code to your email</p>
+            <div class="input-group">
+                <label>Verification Code</label>
+                <input type="text" id="verification-code" placeholder="Enter 6-digit code" maxlength="6">
+            </div>
+            <button id="verify-btn" class="btn btn-primary">Verify</button>
+            <button id="resend-code-btn" class="btn btn-secondary">Resend Code</button>
+            <div id="verification-status" class="status-msg"></div>
+        </div>
+    </div>
     </div>
     <!-- Already Logged In Screen -->
     <div class="login-card hidden" id="already-logged-in">
@@ -514,6 +529,18 @@
             if (isLoginMode) {
                 result = await supabaseClient.auth.signInWithPassword({ email, password });
             } else {
+                // Check if user already exists before signup
+                const { data: existingUser } = await supabaseClient
+                    .from('profiles')
+                    .select('email')
+                    .eq('email', email.toLowerCase().trim())
+                    .maybeSingle();
+                if (existingUser) {
+                    showStatus('An account with this email already exists. Please login instead.', 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'Sign Up';
+                    return;
+                }
                 result = await supabaseClient.auth.signUp({ email, password });
             }
             const { data, error } = result;
@@ -524,7 +551,12 @@
                 return;
             }
             if (!isLoginMode && !data.session && data.user) {
-                showStatus('Please check your email to confirm your account.', 'success');
+                // Show verification screen
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('verification-screen').classList.remove('hidden');
+                document.getElementById('verification-email-display').textContent = `We sent a verification code to ${email}`;
+                // Store email for verification
+                window.pendingVerificationEmail = email;
                 btn.disabled = false;
                 btn.textContent = 'Sign Up';
                 return;
@@ -635,6 +667,56 @@
             setMode(true); // Default to login
             btn.textContent = 'Switch Account'; // Reset button text
         });
+        // Verification Code Handler
+        document.getElementById('verify-btn').addEventListener('click', async () => {
+            const code = document.getElementById('verification-code').value;
+            const email = window.pendingVerificationEmail;
+            if (!code || code.length !== 6) {
+                showVerificationStatus('Please enter a valid 6-digit code', 'error');
+                return;
+            }
+            const btn = document.getElementById('verify-btn');
+            btn.disabled = true;
+            btn.textContent = 'Verifying...';
+            const { data, error } = await supabaseClient.auth.verifyOtp({
+                email: email,
+                token: code,
+                type: 'signup'
+            });
+            if (error) {
+                showVerificationStatus(error.message, 'error');
+                btn.disabled = false;
+                btn.textContent = 'Verify';
+                return;
+            }
+            if (data.session) {
+                handleAuthSuccess(data.session);
+            }
+        });
+        // Resend Code Handler
+        document.getElementById('resend-code-btn').addEventListener('click', async () => {
+            const email = window.pendingVerificationEmail;
+            const btn = document.getElementById('resend-code-btn');
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+            const { error } = await supabaseClient.auth.resend({
+                type: 'signup',
+                email: email
+            });
+            if (error) {
+                showVerificationStatus('Failed to resend code: ' + error.message, 'error');
+            } else {
+                showVerificationStatus('Code resent! Check your email.', 'success');
+            }
+            btn.disabled = false;
+            btn.textContent = 'Resend Code';
+        });
+        function showVerificationStatus(msg, type) {
+            const statusEl = document.getElementById('verification-status');
+            statusEl.textContent = msg;
+            statusEl.className = 'status-msg ' + type;
+            statusEl.style.display = 'block';
+        }
     </script>
 </body>
 </html>
